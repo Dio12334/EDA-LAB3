@@ -21,6 +21,7 @@ struct Nodo{
     // Atributos
     int dato;
     int color;
+    std::vector<Item *> items;
 
     // Relacion con otros Nodos
     Nodo *left;
@@ -88,13 +89,16 @@ private:
 
 public:
     RBtree();
-    void insertar(int);
+    void insertar(int, Item*);
     void erase(int);
     void eliminarNodo (int);
 
     Tcnt preOrder();
     Tcnt inOrder();
     Tcnt postOrder();
+
+    void postOrdeFix(Nodo*);
+    void fix_atributes();
 
     ~RBtree();
 };

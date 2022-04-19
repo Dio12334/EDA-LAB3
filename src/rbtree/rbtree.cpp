@@ -8,6 +8,9 @@ Nodo::Nodo(int dato){
     left   = nullptr;
     right  = nullptr;
     father = nullptr;
+
+    height = size = 0;
+    first = last = 0;
 }
 
 bool Nodo::is_leaf(){
@@ -425,10 +428,16 @@ void  RBtree::eliminarNodo(int dato) {
     erase(dato);
 }
 
-void RBtree::insertar(int dato){
-    Nodo *puntero = new Nodo(dato);
-    root = insertarNodo(root,puntero);
-    corregirArbol(puntero);
+void RBtree::insertar(int dato, Item* item){
+
+    Nodo *puntero = find(dato);
+
+    if(!puntero){
+        puntero = new Nodo(dato);
+        root = insertarNodo(root,puntero);
+        corregirArbol(puntero);
+    }
+    puntero->items.push_back(item);
 }
 
 
@@ -478,6 +487,39 @@ RBtree::Tcnt RBtree::postOrder(){
     postOrder(root, res);
 
     return res;
+}
+
+void RBtree::postOrdeFix(Nodo *node){
+
+    if(!node) return;
+
+    if(node->left == nullptr && node->right == nullptr){
+        node->first = node->last = node->dato;
+        node->height = 0;
+        node->size = 1;
+        return ;
+    }
+
+    postOrdeFix(node->left);
+    postOrdeFix(node->right);
+
+    node->first = (node->left) ? node->left->first: 0;
+    node->last = (node->right) ? node->right->last : 0;
+
+    size_t hl, hr;
+    hl = (node->left) ? node->left->height : 0;
+    hr = (node->right) ? node->right->height : 0;
+    
+    node->height = std::max(hl,hr) + 1;
+    node->size = (node->left) ? node->left->size : 0 
+    + (node->right) ? node->right->size : 0; 
+    
+}
+
+void RBtree::fix_atributes(){
+    Nodo* cur = root;
+    
+    postOrdeFix(cur);
 }
 
 RBtree::RBtree(){
